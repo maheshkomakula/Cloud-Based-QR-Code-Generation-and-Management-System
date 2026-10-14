@@ -1,0 +1,17 @@
+# Node dependencies
+node_modules/
+package-lock.json
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Environment and runtime
+.env
+.DS_Store
+Thumbs.db
+
+# Temp files
+*.tmp
+data/database.json.tmp

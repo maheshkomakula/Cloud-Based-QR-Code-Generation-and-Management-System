@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cloud QR — Advanced QR Code Generation & Cloud Management System</title>
+  
+  <!-- Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- CSS Styles -->
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/qr-studio.css">
+
+  <!-- Chart.js for Cloud Analytics -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- QR Code Styling Engine (Supports custom dots, gradients, logos, corner eyes) -->
+  <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.6.0-rc.1/lib/qr-code-styling.js"></script>
+
+  <!-- HTML5 QR Code Scanner for Camera and Image Upload -->
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="dark-theme">
+  <!-- Application Shell -->
+  <div class="app-layout">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+            <line x1="7" y1="7" x2="7.01" y2="7"></line>
+            <line x1="17" y1="7" x2="17.01" y2="7"></line>
+            <line x1="7" y1="17" x2="7.01" y2="17"></line>
+            <path d="M10 10l4 4m0-4l-4 4"></path>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h2>Cloud<span>QR</span></h2>
+          <span class="badge-pro">ENTERPRISE</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-view="studio" id="nav-studio">
+          <span class="nav-icon">✨</span>
+          <span class="nav-label">QR Studio & Generator</span>
+        </button>
+
+        <button class="nav-item" data-view="manager" id="nav-manager">
+          <span class="nav-icon">📁</span>
+          <span class="nav-label">Cloud QR Manager</span>
+          <span class="nav-badge" id="badge-total-qrs">4</span>
+        </button>
+
+        <button class="nav-item" data-view="analytics" id="nav-analytics">
+          <span class="nav-icon">📈</span>
+          <span class="nav-label">Analytics & Tracking</span>
+          <span class="live-dot" title="Live scan tracking active"></span>
+        </button>
+
+        <button class="nav-item" data-view="bulk" id="nav-bulk">
+          <span class="nav-icon">⚡</span>
+          <span class="nav-label">Bulk Generator</span>
+        </button>
+
+        <button class="nav-item" data-view="scanner" id="nav-scanner">
+          <span class="nav-icon">📷</span>
+          <span class="nav-label">QR Code Scanner</span>
+        </button>
+
+        <button class="nav-item" data-view="api" id="nav-api">
+          <span class="nav-icon">🔌</span>
+          <span class="nav-label">Cloud REST API</span>
+        </button>
+      </nav>
+
+      <!-- Cloud Status Box -->
+      <div class="sidebar-footer">
+        <div class="cloud-status-box">
+          <div class="status-indicator">
+            <span class="pulse-indicator"></span>
+            <span>Cloud Sync: <strong>Connected</strong></span>
+          </div>
+          <div class="sub-status" id="server-url-display">http://localhost:5000</div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Navigation Bar -->
+      <header class="top-bar">
+        <div class="top-bar-left">
+          <h1 id="page-title">QR Studio & Customization</h1>
+          <p id="page-subtitle">Design dynamic, brand-customized QR codes with cloud redirection and scan tracking</p>
+        </div>
+
+        <div class="top-bar-right">
+          <div class="global-stats-pill">
+            <span class="stat-pill-item"><strong id="topbar-total-scans">290</strong> Scans Tracked</span>
+            <span class="stat-pill-divider"></span>
+            <span class="stat-pill-item"><strong id="topbar-active-codes">3</strong> Active Campaigns</span>
+          </div>
+
+          <button class="btn btn-outline" id="btn-quick-new-qr">
+            <span>+ New QR Code</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- View 1: QR Studio & Generator -->
+      <section id="view-studio" class="view-panel active">
+        <div class="studio-grid">
+          
+          <!-- Left Column: Controls & Styling Studio -->
+          <div class="studio-controls-card">
+            
+            <!-- Type Selector Tabs -->
+            <div class="section-title-sm">1. Select QR Data Type</div>
+            <div class="type-selector-bar">
+              <button class="type-pill active" data-type="url">
+                <span class="type-icon">🔗</span>
+                <span>Website</span>
+              </button>
+              <button class="type-pill" data-type="wifi">
+                <span class="type-icon">📶</span>
+                <span>Wi-Fi</span>
+              </button>
+              <button class="type-pill" data-type="vcard">
+                <span class="type-icon">👤</span>
+                <span>vCard</span>
+              </button>
+              <button class="type-pill" data-type="text">
+                <span class="type-icon">📝</span>
+                <span>Text</span>
+              </button>
+              <button class="type-pill" data-type="whatsapp">
+                <span class="type-icon">💬</span>
+                <span>WhatsApp</span>
+              </button>
+              <button class="type-pill" data-type="payment">
+                <span class="type-icon">💳</span>
+                <span>UPI / Pay</span>
+              </button>
+              <button class="type-pill" data-type="email">
+                <span class="type-icon">✉️</span>
+                <span>Email</span>
+              </button>
+            </div>
+
+            <!-- Dynamic vs Static Switcher Banner -->
+            <div class="mode-selection-banner">
+              <div class="mode-info">
+                <div class="mode-title-row">
+                  <span class="mode-badge dynamic" id="mode-status-badge">DYNAMIC QR CODE</span>
+                  <label class="switch">
+                    <input type="checkbox" id="toggle-dynamic-mode" checked>
+                    <span class="slider round"></span>
+                  </label>
+                </div>
+                <p id="mode-explanation-text">
+                  Editable destination anytime in cloud dashboard + Real-time scan statistics & location tracking.
+                </p>
+              </div>
+            </div>
+
+            <!-- Content Inputs Container -->
+            <div class="inputs-container">
+              
+              <!-- URL Form (Default) -->
+              <div class="type-form" id="form-url">
+                <div class="form-group">
+                  <label>Target Destination URL <span class="req">*</span></label>
+                  <div class="input-with-icon">
+                    <span class="input-icon">🌐</span>
+                    <input type="url" id="input-url" placeholder="https://yourwebsite.com/promotion" value="https://example.com/tech-summit-2026">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Wi-Fi Form -->
+              <div class="type-form hidden" id="form-wifi">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Network Name (SSID) <span class="req">*</span></label>
+                    <input type="text" id="input-wifi-ssid" placeholder="Office_Guest_WiFi">
+                  </div>
+                  <div class="form-group">
+                    <label>Encryption Type</label>
+                    <select id="input-wifi-encryption">
+                      <option value="WPA" selected>WPA / WPA2 / WPA3</option>
+                      <option value="WEP">WEP</option>
+                      <option value="nopass">None (Open)</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>Wi-Fi Password</label>
+                  <input type="password" id="input-wifi-pass" placeholder="Network password">
+                </div>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="input-wifi-hidden"> Hidden Network
+                </label>
+              </div>
+
+              <!-- vCard Form -->
+              <div class="type-form hidden" id="form-vcard">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="input-vcard-name" placeholder="John Doe">
+                  </div>
+                  <div class="form-group">
+                    <label>Phone Number</label>
+                    <input type="tel" id="input-vcard-phone" placeholder="+1 (555) 000-1122">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" id="input-vcard-email" placeholder="john@example.com">
+                  </div>
+                  <div class="form-group">
+                    <label>Company / Organization</label>
+                    <input type="text" id="input-vcard-org" placeholder="Acme Corp">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Text Form -->
+              <div class="type-form hidden" id="form-text">
+                <div class="form-group">
+                  <label>Plain Text Content</label>
+                  <textarea id="input-text-content" rows="3" placeholder="Enter any text, serial number, or note..."></textarea>
+                </div>
+              </div>
+
+              <!-- WhatsApp Form -->
+              <div class="type-form hidden" id="form-whatsapp">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Country Code + Phone</label>
+                    <input type="tel" id="input-wa-phone" placeholder="919876543210">
+                  </div>
+                  <div class="form-group">
+                    <label>Pre-filled Message</label>
+                    <input type="text" id="input-wa-message" placeholder="Hi! I scanned your QR code">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Form -->
+              <div class="type-form hidden" id="form-payment">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>UPI ID / VPA <span class="req">*</span></label>
+                    <input type="text" id="input-pay-vpa" placeholder="merchant@upi">
+                  </div>
+                  <div class="form-group">
+                    <label>Payee Name</label>
+                    <input type="text" id="input-pay-name" placeholder="Coffee Roasters">
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Amount (Optional)</label>
+                    <input type="number" id="input-pay-amount" placeholder="e.g. 250">
+                  </div>
+                  <div class="form-group">
+                    <label>Note / Transaction Ref</label>
+                    <input type="text" id="input-pay-note" placeholder="Order #1042">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Email Form -->
+              <div class="type-form hidden" id="form-email">
+                <div class="form-group">
+                  <label>Recipient Email</label>
+                  <input type="email" id="input-email-to" placeholder="support@domain.com">
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label>Subject</label>
+                    <input type="text" id="input-email-subject" placeholder="Customer Inquiry">
+                  </div>
+                  <div class="form-group">
+                    <label>Body</label>
+                    <input type="text" id="input-email-body" placeholder="Hello team...">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Campaign Meta Fields -->
+            <div class="campaign-meta-box">
+              <div class="form-row">
+                <div class="form-group">
+                  <label>Campaign Title</label>
+                  <input type="text" id="input-campaign-title" placeholder="e.g. Tech Summit 2026 Portal" value="Tech Summit 2026 Portal">
+                </div>
+                <div class="form-group">
+                  <label>Category Tag</label>
+                  <select id="input-campaign-category">
+                    <option value="Marketing" selected>Marketing</option>
+                    <option value="Operations">Operations</option>
+                    <option value="Dining">Dining</option>
+                    <option value="Event">Event</option>
+                    <option value="Payments">Payments</option>
+                    <option value="General">General</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group" id="group-custom-shortcode">
+                <label>Custom Short Link Slug (Optional)</label>
+                <div class="input-with-prefix">
+                  <span class="prefix">/r/</span>
+                  <input type="text" id="input-custom-slug" placeholder="custom-slug" value="summit2026">
+                </div>
+              </div>
+            </div>
+
+            <!-- Visual Design & Customization Accordions -->
+            <div class="design-customizer-header">
+              <span class="section-title-sm">2. Advanced QR Styling Studio</span>
+            </div>
+
+            <div class="accordion-group">
+              
+              <!-- Tab 1: Dots & Body Pattern -->
+              <div class="accordion-item open">
+                <button class="accordion-header">
+                  <span>Body Dots Pattern</span>
+                  <span class="acc-chevron">▾</span>
+                </button>
+                <div class="accordion-content">
+                  <div class="pattern-options-grid" id="dot-style-selector">
+                    <div class="pattern-card active" data-dot="square">
+                      <div class="pattern-preview square-preview"></div>
+                      <span>Classic Square</span>
+                    </div>
+                    <div class="pattern-card" data-dot="rounded">
+                      <div class="pattern-preview rounded-preview"></div>
+                      <span>Rounded</span>
+                    </div>
+                    <div class="pattern-card" data-dot="dots">
+                      <div class="pattern-preview dots-preview"></div>
+                      <span>Circular Dots</span>
+                    </div>
+                    <div class="pattern-card" data-dot="classy">
+                      <div class="pattern-preview classy-preview"></div>
+                      <span>Classy Diamond</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 2: Corner Eye Styles -->
+              <div class="accordion-item">
+                <button class="accordion-header">
+                  <span>Corner Eyes (Finder Pattern)</span>
+                  <span class="acc-chevron">▾</span>
+                </button>
+                <div class="accordion-content">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label>Corner Outer Square</label>
+                      <select id="select-corner-square">
+                        <option value="square">Square</option>
+                        <option value="extra-rounded" selected>Extra Rounded</option>
+                        <option value="dot">Circular</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label>Corner Inner Dot</label>
+                      <select id="select-corner-dot">
+                        <option value="square">Square</option>
+                        <option value="dot" selected>Dot / Circle</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 3: Colors & Gradients -->
+              <div class="accordion-item open">
+                <button class="accordion-header">
+                  <span>Colors & High-Tech Gradients</span>
+                  <span class="acc-chevron">▾</span>
+                </button>
+                <div class="accordion-content">
+                  <div class="color-type-toggle">
+                    <label><input type="radio" name="color-mode" value="solid"> Solid Color</label>
+                    <label><input type="radio" name="color-mode" value="gradient" checked> Rich Gradient</label>
+                  </div>
+
+                  <div class="color-controls-row">
+                    <div class="color-picker-item">
+                      <label>Primary Color</label>
+                      <div class="color-input-wrapper">
+                        <input type="color" id="picker-fg1" value="#4f46e5">
+                        <input type="text" id="text-fg1" value="#4f46e5" class="hex-text">
+                      </div>
+                    </div>
+
+                    <div class="color-picker-item" id="picker-fg2-container">
+                      <label>Gradient Stop 2</label>
+                      <div class="color-input-wrapper">
+                        <input type="color" id="picker-fg2" value="#06b6d4">
+                        <input type="text" id="text-fg2" value="#06b6d4" class="hex-text">
+                      </div>
+                    </div>
+
+                    <div class="color-picker-item">
+                      <label>Background</label>
+                      <div class="color-input-wrapper">
+                        <input type="color" id="picker-bg" value="#ffffff">
+                        <input type="text" id="text-bg" value="#ffffff" class="hex-text">
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Gradient Presets -->
+                  <div class="gradient-presets-bar">
+                    <span class="preset-label">Presets:</span>
+                    <button class="grad-preset-btn" style="background: linear-gradient(135deg, #4f46e5, #06b6d4)" data-c1="#4f46e5" data-c2="#06b6d4" title="Cyber Indigo"></button>
+                    <button class="grad-preset-btn" style="background: linear-gradient(135deg, #7c3aed, #ec4899)" data-c1="#7c3aed" data-c2="#ec4899" title="Neon Violet"></button>
+                    <button class="grad-preset-btn" style="background: linear-gradient(135deg, #059669, #10b981)" data-c1="#059669" data-c2="#10b981" title="Emerald Growth"></button>
+                    <button class="grad-preset-btn" style="background: linear-gradient(135deg, #dc2626, #f97316)" data-c1="#dc2626" data-c2="#f97316" title="Sunset Flame"></button>
+                    <button class="grad-preset-btn" style="background: linear-gradient(135deg, #0f172a, #334155)" data-c1="#0f172a" data-c2="#334155" title="Dark Slate"></button>
+                    <button class="grad-preset-btn" style="background: #000000" data-c1="#000000" data-c2="#000000" title="Pure Black"></button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 4: Center Logo & Branding -->
+              <div class="accordion-item">
+                <button class="accordion-header">
+                  <span>Center Logo & Brand Badges</span>
+                  <span class="acc-chevron">▾</span>
+                </button>
+                <div class="accordion-content">
+                  <div class="logo-presets-grid" id="logo-presets-container">
+                    <button class="logo-preset-pill active" data-logo="none">None</button>
+                    <button class="logo-preset-pill" data-logo="link">🔗 Link</button>
+                    <button class="logo-preset-pill" data-logo="wifi">📶 Wi-Fi</button>
+                    <button class="logo-preset-pill" data-logo="whatsapp">💬 WhatsApp</button>
+                    <button class="logo-preset-pill" data-logo="payment">💳 UPI</button>
+                    <button class="logo-preset-pill" data-logo="star">⭐ Star</button>
+                    <button class="logo-preset-pill" data-logo="custom" id="btn-custom-logo-pill">Upload Image</button>
+                  </div>
+
+                  <div class="custom-logo-upload-box hidden" id="custom-logo-upload-section">
+                    <input type="file" id="input-logo-file" accept="image/*">
+                    <p class="file-hint">Upload PNG or SVG (recommended square, max 2MB)</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tab 5: Frame & CTA Template -->
+              <div class="accordion-item">
+                <button class="accordion-header">
+                  <span>Frames & Call-to-Action</span>
+                  <span class="acc-chevron">▾</span>
+                </button>
+                <div class="accordion-content">
+                  <div class="frame-selector-row">
+                    <div class="frame-chip active" data-frame="scan-me">
+                      <span class="frame-sample">🏷️</span>
+                      <span>SCAN ME Badge</span>
+                    </div>
+                    <div class="frame-chip" data-frame="badge">
+                      <span class="frame-sample">⭐</span>
+                      <span>Top Header</span>
+                    </div>
+                    <div class="frame-chip" data-frame="modern-border">
+                      <span class="frame-sample">📱</span>
+                      <span>Phone Card</span>
+                    </div>
+                    <div class="frame-chip" data-frame="none">
+                      <span class="frame-sample">⬜</span>
+                      <span>No Frame</span>
+                    </div>
+                  </div>
+
+                  <div class="form-group" style="margin-top: 14px;">
+                    <label>Call-to-Action Text</label>
+                    <input type="text" id="input-frame-text" value="SCAN FOR PASS" placeholder="SCAN ME">
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Right Column: Live Interactive QR Preview & Save -->
+          <div class="studio-preview-card">
+            <div class="preview-card-inner">
+              
+              <div class="preview-header">
+                <div class="preview-badge">LIVE CLOUD PREVIEW</div>
+                <div class="preview-mode-tag" id="preview-mode-tag">Dynamic • Tracked</div>
+              </div>
+
+              <!-- QR Code Canvas Display Box with Dynamic Frame Wrapper -->
+              <div class="qr-render-canvas-container" id="qr-frame-wrapper">
+                <div class="qr-frame-header hidden" id="frame-header-banner">
+                  <span id="frame-header-text">CONNECT WI-FI</span>
+                </div>
+
+                <div class="qr-canvas-holder" id="qr-canvas-holder">
+                  <!-- QR Code Styling Engine Renders Canvas / SVG Here -->
+                </div>
+
+                <div class="qr-frame-bottom" id="frame-bottom-badge">
+                  <span id="frame-bottom-text">SCAN FOR PASS</span>
+                </div>
+              </div>
+
+              <!-- Live Short Link Details -->
+              <div class="preview-meta-info">
+                <div class="shortlink-box">
+                  <span class="shortlink-label">Cloud Dynamic Redirect:</span>
+                  <div class="shortlink-val-group">
+                    <code id="display-short-url">http://localhost:5000/r/summit2026</code>
+                    <button class="btn-copy-sm" id="btn-copy-short-url" title="Copy Link">📋</button>
+                  </div>
+                </div>
+
+                <div class="live-target-box">
+                  <span class="target-label">Target:</span>
+                  <span class="target-val" id="display-target-url">https://example.com/tech-summit-2026</span>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="preview-actions-group">
+                <button class="btn btn-primary btn-lg" id="btn-save-cloud">
+                  <span>☁️ Save to Cloud Campaign</span>
+                </button>
+
+                <div class="export-options-row">
+                  <button class="btn btn-secondary" id="btn-download-png">
+                    <span>📥 Download PNG</span>
+                  </button>
+                  <button class="btn btn-secondary" id="btn-download-svg">
+                    <span>⚡ Vector SVG</span>
+                  </button>
+                  <button class="btn btn-secondary" id="btn-print-card">
+                    <span>🖨️ Print Sheet</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Pro Quality Multiplier -->
+              <div class="resolution-selector">
+                <span>Export Quality:</span>
+                <label><input type="radio" name="res-multiplier" value="1000" checked> Standard (1000px)</label>
+                <label><input type="radio" name="res-multiplier" value="2000"> HD (2000px)</label>
+                <label><input type="radio" name="res-multiplier" value="4000"> Print 300DPI</label>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- View 2: Cloud QR Manager -->
+      <section id="view-manager" class="view-panel">
+        
+        <!-- Management KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi-card">
+            <div class="kpi-icon">📁</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Total Cloud QR Codes</span>
+              <h3 class="kpi-value" id="kpi-mgr-total">4</h3>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon green">✅</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Active Campaigns</span>
+              <h3 class="kpi-value" id="kpi-mgr-active">3</h3>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon orange">⏸️</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Paused Campaigns</span>
+              <h3 class="kpi-value" id="kpi-mgr-paused">1</h3>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon purple">📊</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Total Scans Recorded</span>
+              <h3 class="kpi-value" id="kpi-mgr-scans">290</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Manager Toolbar -->
+        <div class="manager-toolbar">
+          <div class="search-input-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="mgr-search-input" placeholder="Search by name, short code, destination URL, or tag...">
+          </div>
+
+          <div class="filter-controls">
+            <select id="mgr-filter-status">
+              <option value="all">All Statuses</option>
+              <option value="active">Active Only</option>
+              <option value="paused">Paused Only</option>
+            </select>
+
+            <select id="mgr-filter-category">
+              <option value="all">All Categories</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Operations">Operations</option>
+              <option value="Dining">Dining</option>
+              <option value="Executive">Executive</option>
+              <option value="General">General</option>
+            </select>
+
+            <button class="btn btn-primary" id="btn-mgr-create-new">
+              <span>+ Create QR</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic QR Codes Grid / Table -->
+        <div class="qr-cards-grid" id="mgr-cards-container">
+          <!-- Populated by qr-manager.js -->
+        </div>
+
+      </section>
+
+      <!-- View 3: Analytics & Live Tracking Hub -->
+      <section id="view-analytics" class="view-panel">
+        
+        <!-- Filter Header -->
+        <div class="analytics-filter-header">
+          <div class="filter-headline">
+            <h2>Real-Time Scan Intelligence</h2>
+            <p>Live device detection, operating systems, browsers, and geographic scan logs</p>
+          </div>
+
+          <div class="analytics-actions">
+            <select id="analytics-qr-select">
+              <option value="all">🌐 All Campaigns Combined</option>
+              <!-- Populated dynamically -->
+            </select>
+
+            <button class="btn btn-outline" id="btn-export-csv">
+              <span>📥 Export CSV Log</span>
+            </button>
+
+            <!-- Test Simulation Button -->
+            <button class="btn btn-sim" id="btn-open-simulate-modal">
+              <span>⚡ Test / Simulate Scan</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="kpi-grid">
+          <div class="kpi-card highlight">
+            <div class="kpi-icon purple">🔥</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Total Real-Time Scans</span>
+              <h3 class="kpi-value" id="ana-total-scans">290</h3>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon blue">👥</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Unique Device Visitors</span>
+              <h3 class="kpi-value" id="ana-unique-visitors">142</h3>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon green">📱</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Mobile Traffic Share</span>
+              <h3 class="kpi-value" id="ana-mobile-share">68%</h3>
+            </div>
+          </div>
+          <div class="kpi-card">
+            <div class="kpi-icon orange">🌍</div>
+            <div class="kpi-details">
+              <span class="kpi-label">Top Location</span>
+              <h3 class="kpi-value" id="ana-top-country">United States</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+          
+          <!-- Timeline Chart (Main) -->
+          <div class="chart-card full-width">
+            <div class="chart-header">
+              <h3>Scan Trajectory Over Time</h3>
+              <span class="chart-sub">Daily scan volume for active campaigns</span>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 280px;">
+              <canvas id="chart-timeline"></canvas>
+            </div>
+          </div>
+
+          <!-- Device Breakdown Donut -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Device Breakdown</h3>
+              <span class="chart-sub">Mobile vs Desktop vs Tablet</span>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 240px;">
+              <canvas id="chart-devices"></canvas>
+            </div>
+          </div>
+
+          <!-- Operating System Donut -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Operating Systems</h3>
+              <span class="chart-sub">Android, iOS, Windows, macOS</span>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 240px;">
+              <canvas id="chart-os"></canvas>
+            </div>
+          </div>
+
+          <!-- Browsers Distribution -->
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3>Browsers Used</h3>
+              <span class="chart-sub">Chrome, Safari, Edge, Firefox</span>
+            </div>
+            <div class="chart-canvas-wrapper" style="height: 240px;">
+              <canvas id="chart-browsers"></canvas>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Live Scan Logs Audit Table -->
+        <div class="audit-table-card">
+          <div class="audit-table-header">
+            <div>
+              <h3>Real-Time Scan Activity Stream</h3>
+              <span class="audit-sub">Instant live logs showing client headers and geolocation</span>
+            </div>
+            <button class="btn btn-xs btn-outline" id="btn-refresh-analytics">↻ Refresh Stream</button>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Campaign / Short Code</th>
+                  <th>Device & OS</th>
+                  <th>Browser</th>
+                  <th>Location</th>
+                  <th>IP Address</th>
+                  <th>Referrer</th>
+                </tr>
+              </thead>
+              <tbody id="scan-stream-tbody">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- View 4: Bulk / Batch QR Generator -->
+      <section id="view-bulk" class="view-panel">
+        <div class="bulk-container">
+          <div class="bulk-header-card">
+            <h2>⚡ Bulk QR Code Generator</h2>
+            <p>Generate dozens or hundreds of styled QR codes instantly from a list of URLs or CSV table, and download them as a compressed ZIP file.</p>
+          </div>
+
+          <div class="bulk-card">
+            <div class="form-group">
+              <label>Enter Destinations / URLs (One per line, or Title,URL format):</label>
+              <textarea id="bulk-input-text" rows="8" placeholder="Product A,https://example.com/p/1
+Product B,https://example.com/p/2
+Product C,https://example.com/p/3
+Artisan Blend,https://example.com/menu/artisan
+Special Offer,https://example.com/promo/vip">Summer Promo A,https://example.com/promo/summer-a
+Summer Promo B,https://example.com/promo/summer-b
+Summer Promo C,https://example.com/promo/summer-c
+VIP Member Pass,https://example.com/passes/vip-101
+Express Check-in,https://example.com/checkin/hall-2</textarea>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label>Filename Prefix</label>
+                <input type="text" id="bulk-prefix" value="campaign-2026">
+              </div>
+              <div class="form-group">
+                <label>Dynamic Redirection</label>
+                <select id="bulk-dynamic">
+                  <option value="true" selected>Dynamic (Track Scans in Cloud)</option>
+                  <option value="false">Static (Direct Payload)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="bulk-actions">
+              <button class="btn btn-primary btn-lg" id="btn-run-bulk">
+                <span>📦 Generate Batch & Download ZIP</span>
+              </button>
+              <span id="bulk-status-message"></span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 5: QR Code Scanner -->
+      <section id="view-scanner" class="view-panel">
+        <div class="scanner-container">
+          <div class="scanner-header-card">
+            <h2>📷 Integrated QR Code Scanner & Decoder</h2>
+            <p>Scan physical QR codes using your device webcam or drop an image file to instantly decode, verify, and inspect its payload.</p>
+          </div>
+
+          <div class="scanner-grid">
+            <!-- Camera Scanner -->
+            <div class="scanner-card">
+              <h3>Scan via Webcam</h3>
+              <div id="camera-reader-viewport"></div>
+              <div class="scanner-camera-controls">
+                <button class="btn btn-primary" id="btn-start-camera">Start Live Camera</button>
+                <button class="btn btn-outline hidden" id="btn-stop-camera">Stop Camera</button>
+              </div>
+            </div>
+
+            <!-- Image Upload Scanner -->
+            <div class="scanner-card">
+              <h3>Scan from Image File</h3>
+              <div class="upload-dropzone" id="scanner-dropzone">
+                <div class="drop-icon">🖼️</div>
+                <p>Click to select or drag and drop a QR code image</p>
+                <input type="file" id="scanner-file-input" accept="image/*" class="file-hidden">
+              </div>
+
+              <!-- Scanner Result Display -->
+              <div class="scan-result-card hidden" id="scan-result-box">
+                <div class="result-badge">DECODED RESULT</div>
+                <h4 id="scan-result-type">Type: URL</h4>
+                <div class="result-payload" id="scan-result-payload">https://...</div>
+                <div class="result-actions">
+                  <button class="btn btn-sm btn-primary" id="btn-open-scanned-url">Open URL</button>
+                  <button class="btn btn-sm btn-secondary" id="btn-copy-scanned-payload">Copy Payload</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- View 6: Developer Cloud REST API -->
+      <section id="view-api" class="view-panel">
+        <div class="api-doc-container">
+          <div class="api-header-card">
+            <h2>🔌 Cloud REST API & Webhooks</h2>
+            <p>Integrate automated QR generation, dynamic redirects, and scan analytics into any third-party app or backend.</p>
+          </div>
+
+          <div class="api-key-box">
+            <div class="key-label">Your Simulated API Secret Key:</div>
+            <div class="key-display">
+              <code>sk_live_cloudqr_983f472d0b1a8264901fbc654</code>
+              <button class="btn-copy-sm" onclick="navigator.clipboard.writeText('sk_live_cloudqr_983f472d0b1a8264901fbc654'); alert('API Key copied!')">📋</button>
+            </div>
+          </div>
+
+          <div class="api-endpoints-list">
+            
+            <div class="endpoint-card">
+              <div class="ep-badge get">GET</div>
+              <div class="ep-path">/r/:shortCode</div>
+              <div class="ep-desc">High-performance Dynamic QR Redirector with automatic scan tracking and client parsing.</div>
+            </div>
+
+            <div class="endpoint-card">
+              <div class="ep-badge get">GET</div>
+              <div class="ep-path">/api/qrcodes</div>
+              <div class="ep-desc">Retrieve all QR codes with optional filtering by status, category, or search term.</div>
+            </div>
+
+            <div class="endpoint-card">
+              <div class="ep-badge post">POST</div>
+              <div class="ep-path">/api/qrcodes</div>
+              <div class="ep-desc">Create a new dynamic or static QR code programmatically.</div>
+            </div>
+
+            <div class="endpoint-card">
+              <div class="ep-badge put">PUT</div>
+              <div class="ep-path">/api/qrcodes/:id</div>
+              <div class="ep-desc">Update destination URL in real time without changing the physical QR image.</div>
+            </div>
+
+            <div class="endpoint-card">
+              <div class="ep-badge get">GET</div>
+              <div class="ep-path">/api/analytics/overview</div>
+              <div class="ep-desc">Fetch aggregated scan analytics, timeline, devices, and country breakdowns.</div>
+            </div>
+
+          </div>
+
+          <!-- Code Snippet -->
+          <div class="code-snippet-card">
+            <div class="code-header">
+              <span>Node.js / JavaScript Fetch Example</span>
+            </div>
+            <pre><code>// Create a Dynamic QR Code via API
+const response = await fetch('http://localhost:5000/api/qrcodes', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    title: 'Spring Product Launch',
+    type: 'url',
+    destinationUrl: 'https://myshop.com/new-product',
+    isDynamic: true,
+    customShortCode: 'spring26'
+  })
+});
+const data = await response.json();
+console.log('Short Link:', `http://localhost:5000/r/${data.data.shortCode}`);</code></pre>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Modal: Quick Edit Destination URL -->
+  <div class="modal-backdrop hidden" id="edit-destination-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>Edit Dynamic Destination</h3>
+        <button class="modal-close" id="btn-close-edit-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Updating the destination changes where visitors are redirected <strong>instantly</strong>, without having to reprint or regenerate the QR code image!</p>
+        <input type="hidden" id="edit-qr-id">
+        <div class="form-group">
+          <label>Campaign Title</label>
+          <input type="text" id="edit-qr-title">
+        </div>
+        <div class="form-group">
+          <label>Target Destination URL <span class="req">*</span></label>
+          <input type="text" id="edit-qr-destination">
+        </div>
+        <div class="form-group">
+          <label>Campaign Status</label>
+          <select id="edit-qr-status">
+            <option value="active">Active (Redirects Normally)</option>
+            <option value="paused">Paused (Shows Paused Screen)</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-cancel-edit-modal">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-edit-modal">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Simulate Scan (Demo Feature) -->
+  <div class="modal-backdrop hidden" id="simulate-scan-modal">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3>⚡ Simulate Real-Time Scan</h3>
+        <button class="modal-close" id="btn-close-sim-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-note">Simulate a live visitor scanning a QR code with custom device and location to verify real-time tracking.</p>
+        <div class="form-group">
+          <label>Select Campaign</label>
+          <select id="sim-qr-select">
+            <!-- Populated dynamically -->
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Device Type</label>
+            <select id="sim-device">
+              <option value="Mobile" selected>Mobile (iPhone / Android)</option>
+              <option value="Desktop">Desktop</option>
+              <option value="Tablet">Tablet (iPad)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Operating System</label>
+            <select id="sim-os">
+              <option value="iOS" selected>iOS</option>
+              <option value="Android">Android</option>
+              <option value="Windows">Windows</option>
+              <option value="macOS">macOS</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Browser</label>
+            <select id="sim-browser">
+              <option value="Safari" selected>Safari Mobile</option>
+              <option value="Chrome">Chrome Mobile</option>
+              <option value="Edge">Edge</option>
+              <option value="Firefox">Firefox</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>City & Country</label>
+            <select id="sim-location">
+              <option value="San Francisco,United States">San Francisco, USA</option>
+              <option value="London,United Kingdom">London, UK</option>
+              <option value="Mumbai,India">Mumbai, India</option>
+              <option value="Bengaluru,India">Bengaluru, India</option>
+              <option value="Tokyo,Japan">Tokyo, Japan</option>
+              <option value="Berlin,Germany">Berlin, Germany</option>
+              <option value="Sydney,Australia">Sydney, Australia</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" id="btn-cancel-sim-modal">Cancel</button>
+        <button class="btn btn-primary" id="btn-trigger-simulate">Trigger Simulated Scan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Application Scripts -->
+  <script src="/js/qr-generator.js"></script>
+  <script src="/js/qr-manager.js"></script>
+  <script src="/js/analytics.js"></script>
+  <script src="/js/bulk.js"></script>
+  <script src="/js/scanner.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>
